@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Unicollider</title>
+    <meta name="description" content="Generate and detect Unicode transformation collisions!">
+    <meta name="author" content="spaceraccoon">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="favicon-512x512.png">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+    <style type="text/css">
+        body {
+            color: #ffffff;
+            background-color: #212529;
+            padding: 0 2rem;
+            margin: 0 2rem;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            margin-top: 150px;
+        }
+
+        .nes-container {
+            margin-bottom: 1.5rem !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <main>
+            <section>
+                <h1><i class="nes-octocat animate"></i><span class="nes-text is-primary">Unicollider</span></h1>
+                <p>Generate and detect Unicode transformation collisions! Inspired by <a href="https://eng.getwisdom.io/hacking-github-with-unicode-dotless-i/">Hacking GitHub with Unicode's dotless 'i'</a>.</p>
+            </section>
+
+            <section>
+                <div class="nes-container is-dark with-title">
+                    <p class="title">Plaintext</p>
+                    <textarea id="plaintext" class="nes-textarea is-dark" oninput="handleInput()"></textarea>
+                </div>
+            </section>
+            <section>
+                <div class="nes-container is-dark with-title">
+                    <p class="title">Uppercase Unicode</p>
+                    <textarea id="uppercase" class="nes-textarea is-dark" readonly></textarea>
+                    <button type="button" class="nes-btn is-primary" onclick="copy('uppercase')">Copy</button>
+                </div>
+            </section>
+            <section>
+                <div class="nes-container is-dark with-title">
+                    <p class="title">Lowercase Unicode</p>
+                    <textarea id="lowercase" class="nes-textarea is-dark" readonly></textarea>
+                    <button type="button" class="nes-btn is-primary" onclick="copy('lowercase')">Copy</button>
+                </div>
+            </section>
+            <section class="nes-container is-dark">
+                <p class="nes-balloon from-left is-dark">Built by <a href="https://github.com/spaceraccoon">Eugene
+                        Lim</a> & Styled by <a href="https://github.com/nostalgic-css/NES.css">NES.css</a></p>
+                <div class="social-buttons">
+
+                    <div class="share"><span>Share: </span><a
+                            href="https://twitter.com/share?url=https://spaceraccoon.github.io/unicollider/&text=Unicollider: Generate and detect Unicode transformation collisions!"
+                            target="_blank"><i class="nes-icon twitter"></i></a> <a
+                            href="https://www.facebook.com/sharer.php?u=https://spaceraccoon.github.io/unicollider/&t=Unicollider: Generate and detect Unicode transformation collisions!"
+                            target="_blank" class="fbc-has-badge fbc-UID_1"><i class="nes-icon facebook"></i></a> <a
+                            href="https://www.linkedin.com/shareArticle?url=https://spaceraccoon.github.io/unicollider/&title=Unicollider: Generate and detect Unicode transformation collisions!"
+                            target="_blank"><i class="nes-icon linkedin"></i></a> <a
+                            href="https://spaceraccoon.github.io/unicollider/" target="_blank"><i
+                                class="nes-icon github"></i></a></div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        let plaintext = document.getElementById("plaintext");
+        let uppercase = document.getElementById("uppercase");
+        let lowercase = document.getElementById("lowercase");
+
+        const uppercaseUnicodePairs = {
+            FFI: "\uFB03",
+            FFL: "\uFB04",
+            FF: "\uFB00",
+            FI: "\uFB01",
+            FL: "\uFB02",
+            SS: "\u00DF",
+            ST: "\uFB05",
+            I: "\u0131",
+            S: "\u017F"
+        }
+
+        const lowercaseUnicodePairs = {
+            k: "\u212A"
+        }
+
+        function resizeElements() {
+            [plaintext, uppercase, lowercase].map(e => {
+                e.style.height = 'auto';
+                e.style.height = uppercase.scrollHeight + 10 + 'px';
+            })
+        }
+
+        function convertUppercaseUnicode(input) {
+            for (let [key, value] of Object.entries(uppercaseUnicodePairs)) {
+                let re = new RegExp(key, "g");
+                input = input.replace(re, value);
+            }
+            return input
+        }
+
+        function convertLowercaseUnicode(input) {
+            for (let [key, value] of Object.entries(lowercaseUnicodePairs)) {
+                let re = new RegExp(key, "g");
+                input = input.replace(re, value);
+            }
+            return input
+        }
+
+        function handleInput() {
+            uppercase.value = convertUppercaseUnicode(plaintext.value.toUpperCase());
+            lowercase.value = convertLowercaseUnicode(plaintext.value.toLowerCase());
+            resizeElements();
+        }
+
+        function copy(elementId) {
+            document.querySelector("#" + elementId).select();
+            document.execCommand("copy");
+        }
+
+        resizeElements();
+    </script>
+</body>
+
+</html>
